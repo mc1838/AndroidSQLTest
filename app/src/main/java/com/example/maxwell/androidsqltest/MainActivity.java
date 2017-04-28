@@ -35,6 +35,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         "user=mc1838@csc450;password=Project450;";
     Connection connection = null;
 
+    // Stored set of test SQL query strings:
+    String SQLSelectTest = "SELECT * FROM [dbo].[DungeonMaster]";
+    String SQLInsertTest = "INSERT INTO [dbo].[DungeonMaster] ([Game_IDs])"
+            + " VALUES ('1,2,3')";
+    String SQLUpdateTest = "UPDATE [dbo].[DungeonMaster]"
+            + " SET [Game_IDs] = '4,5,6'"
+            + " WHERE [Game_IDs] = '1,2,3';";
+    String SQLDeleteTest = "DELETE FROM [dbo].[DungeonMaster] "
+            + "WHERE [Game_IDs] = '4,5,6'";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,21 +73,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         testResult = (TextView) findViewById(R.id.testResult);
 
-        //connectClass = new Connect(); //initialize Connect class/module!
-
     }
     public void onClick(View view)
     {
         if (view == btnSelect)
         {
-            String SQLSelectTest = "SELECT * FROM [dbo].[TestTable]";
             String result = connectSelect(SQLSelectTest);
 
-            //Original test
-//            testResult.setText(result);
-//            Toast.makeText(this, "Select query executed!", Toast.LENGTH_SHORT).show();
-
-            //New test
             Intent intent = new Intent(this, DisplayResultsActivity.class);
             intent.putExtra(EXTRA_MESSAGE, result);
             startActivity(intent);
@@ -85,20 +87,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         else if (view == btnInsert)
         {
-            testResult.setText("YOU CLICKED INSERT!");
-            Toast.makeText(this, "Insert query executed!", Toast.LENGTH_SHORT).show();
+            String result = "";
+
+            connectExecute(SQLInsertTest);
+            result = connectSelect(SQLSelectTest);
+            Intent intent = new Intent(this, DisplayResultsActivity.class);
+            intent.putExtra(EXTRA_MESSAGE, result);
+            startActivity(intent);
         }
 
         else if (view == btnUpdate)
         {
-            testResult.setText("YOU CLICKED UPDATE!");
-            Toast.makeText(this, "Update query executed!", Toast.LENGTH_SHORT).show();
+            String result = "";
+
+            connectExecute(SQLUpdateTest);
+            result = connectSelect(SQLSelectTest);
+            Intent intent = new Intent(this, DisplayResultsActivity.class);
+            intent.putExtra(EXTRA_MESSAGE, result);
+            startActivity(intent);
         }
 
         else if (view == btnDelete)
         {
-            testResult.setText("YOU CLICKED DELETE!");
-            Toast.makeText(this, "Delete query executed!", Toast.LENGTH_SHORT).show();
+            String result = "";
+
+            connectExecute(SQLDeleteTest);
+            result = connectSelect(SQLSelectTest);
+            Intent intent = new Intent(this, DisplayResultsActivity.class);
+            intent.putExtra(EXTRA_MESSAGE, result);
+            startActivity(intent);
         }
 
         else if (view == btnLogin)
@@ -137,10 +154,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @SuppressLint("NewApi")
     public String connectSelect(String SQLQuery)
     {
-        //ParallelCodes part...
+        // Allow all forms of Networking threading
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-        //end ParallelCodes part
 
         String result = "";
         try
@@ -158,11 +174,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(SQLQuery))
         {
-
-
-            result += "Select Stmt Result for TestTable:\n";
             ResultSetMetaData rsmd = resultSet.getMetaData(); //needed for column data/indices
             int columns = rsmd.getColumnCount();
+            result += "Select Stmt Result for Table:\n";
             String columnNames = "";
             for (int i=1; i<=columns; i++)
             {
@@ -196,36 +210,41 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     /**
-     * executeReturn - used for Select statements and
-     * queries which return some 'ResultSet'.
-     *
-     * Can use the ResultSet to retrieve and store data!
-     * @param SQLQuery - the specified SQL Select statement
+     * connectExecute - Execute a SQL statement which
+     * returns no result, such as Insert/Update/Delete.
+     * @param SQLQuery - the SQL statement to execute
      */
-    public String[] executeReturn(String SQLQuery, String[] arr)
+    @SuppressLint("NewApi")
+    public void connectExecute(String SQLQuery)
     {
+        // Allow all forms of Networking threading
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
         try
         {
+            Class.forName("net.sourceforge.jtds.jdbc.Driver").newInstance();
             connection = DriverManager.getConnection(connectionString);
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(SQLQuery);
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-            ResultSetMetaData rsmd = resultSet.getMetaData(); //needed for column data/indices
-
-            //perform actions, store data...
-            arr = new String[]{"1","2","3"}; //TEST
-
-            connection.close();
-            statement.close();
-            resultSet.close();
         }
 
         catch (Exception e)
         {
-            e.printStackTrace();
+            Log.w("Error with connection: ", e.getMessage());
+            Toast.makeText(this, "getC "+ e.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
-        return arr;
-    }
+        try (Statement exstatement = connection.createStatement())
+        {
+            exstatement.execute(SQLQuery);
 
+            connection.close();
+            exstatement.close();
+        }
+
+        catch (Exception e)
+        {
+            Log.w("Error with connection: ", e.getMessage());
+            Toast.makeText(this, "exec " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
 }
