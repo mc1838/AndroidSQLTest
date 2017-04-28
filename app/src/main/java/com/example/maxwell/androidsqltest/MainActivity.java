@@ -1,6 +1,7 @@
 package com.example.maxwell.androidsqltest;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+    public static final String EXTRA_MESSAGE = "com.example.maxwell.androidsqltest.MESSAGE";
 
     Button btnSelect;
     Button btnInsert;
@@ -28,14 +30,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     CheckBox chkDM; //DMcheckBox
     TextView testResult;
     boolean isDM = false;
-//    String connectionString = "jdbc:sqlserver://csc450.database.windows.net:1433;" +
-//            "database=testdb;" +
-//            "user=mc1838@csc450;password=Project450;" +
-//            "encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;";
-//    String connectionString = "jdbc:jtds:sqlserver://csc450.database.windows.net:1433;" +
-//        "database=testdb;" +
-//        "user=mc1838@csc450;password=Project450;" +
-//        "encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;";
     String connectionString = "jdbc:jtds:sqlserver://csc450.database.windows.net:1433/" +
         "testdb;" +
         "user=mc1838@csc450;password=Project450;";
@@ -78,9 +72,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         {
             String SQLSelectTest = "SELECT * FROM [dbo].[TestTable]";
             String result = connectSelect(SQLSelectTest);
-//            testResult.setText("YOU CLICKED SELECT!");
-            testResult.setText(result);
-            Toast.makeText(this, "Select query executed!", Toast.LENGTH_SHORT).show();
+
+            //Original test
+//            testResult.setText(result);
+//            Toast.makeText(this, "Select query executed!", Toast.LENGTH_SHORT).show();
+
+            //New test
+            Intent intent = new Intent(this, DisplayResultsActivity.class);
+            intent.putExtra(EXTRA_MESSAGE, result);
+            startActivity(intent);
         }
 
         else if (view == btnInsert)
