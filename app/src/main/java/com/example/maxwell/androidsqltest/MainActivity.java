@@ -32,10 +32,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //            "database=testdb;" +
 //            "user=mc1838@csc450;password=Project450;" +
 //            "encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;";
-    String connectionString = "jdbc:jtds:sqlserver://csc450.database.windows.net:1433;" +
-        "database=testdb;" +
-        "user=mc1838@csc450;password=Project450;" +
-        "encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;";
+//    String connectionString = "jdbc:jtds:sqlserver://csc450.database.windows.net:1433;" +
+//        "database=testdb;" +
+//        "user=mc1838@csc450;password=Project450;" +
+//        "encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;";
+    String connectionString = "jdbc:jtds:sqlserver://csc450.database.windows.net:1433/" +
+        "testdb;" +
+        "user=mc1838@csc450;password=Project450;";
     Connection connection = null;
 
     @Override
@@ -149,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         catch (Exception e)
         {
             Log.w("Error with connection: ", e.getMessage());
-            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "getC "+ e.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
         try (Statement statement = connection.createStatement();
@@ -186,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         catch (Exception e)
         {
             Log.w("Error with connection: ", e.getMessage());
-            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "exec " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
         return result;
