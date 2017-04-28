@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">AndroidSQLTest</string>
+    <string name="login_message">Enter Player/DM ID...</string>
+    <string name="button_login">Login</string>
+    <string name="button_register">Register</string>
+    <string name="DM_check_text">Are You The DungeonMaster?</string>
+    <string name="DM_box">DM?</string>
+    <string name="button_select">SELECT</string>
+    <string name="button_insert">INSERT</string>
+    <string name="button_update">UPDATE</string>
+    <string name="button_delete">DELETE</string>
+    <string name="test_textview">SET OF TESTS:</string>
+    <string name="login_textview">Login with ID:</string>
+    <string name="result_text">No results yet.</string>
+</resources>
